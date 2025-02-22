@@ -69,5 +69,21 @@ export const actions: Actions = {
         await db.delete(feedComments).where(eq(feedComments.id, commentId));
 
         return { success: true };
+    },
+    deleteFeed: async ({ locals, request, params }) => {
+        const formData = await request.formData();
+        const feedId = formData.get('feedId') as string;
+
+        if (!feedId) {
+            return fail(400, { error: 'Feed ID is required' });
+        }
+
+        if (!locals.user) {
+            return fail(401, { error: 'Unauthorized' });
+        }
+
+        await db.delete(feeds).where(eq(feeds.id, feedId));
+
+        throw redirect(302, `/workspace/${params.workspaceId}/feed`);
     }
 }

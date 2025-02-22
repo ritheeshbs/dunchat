@@ -6,6 +6,7 @@
 
 <div class="flex flex-col items-center justify-center h-screen">
     <h1 class="text-2xl font-bold">Feed</h1>
+    <a href={`/workspace/${data.workspace.slug}/feed/create`}>Create Feed</a>
     <ul>
         {#each data.allFeeds as feed}
             <a href={`/workspace/${data.workspace.slug}/feed/${feed.id}`}>
@@ -16,5 +17,5 @@
         {/each}
     </ul>
 
-
+    
 </div>
