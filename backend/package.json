@@ -1,12 +1,24 @@
 {
   "name": "dunchat-api",
   "scripts": {
-    "dev": "bun run --hot src/index.ts"
+    "dev": "bun run --hot src/index.ts",
+    "db:generate": "bun run drizzle-kit generate",
+    "db:migrate": "bun run drizzle-kit migrate",
+    "db:studio": "bun run drizzle-kit studio"
   },
   "dependencies": {
-    "hono": "^4.7.2"
+    "bcryptjs": "^3.0.2",
+    "dotenv": "^16.4.7",
+    "drizzle-orm": "^0.39.3",
+    "hono": "^4.7.2",
+    "nanoid": "^5.1.0",
+    "pg": "^8.13.3"
   },
   "devDependencies": {
-    "@types/bun": "latest"
+    "@types/bcryptjs": "^2.4.6",
+    "@types/bun": "latest",
+    "@types/pg": "^8.11.11",
+    "drizzle-kit": "^0.30.4",
+    "tsx": "^4.19.3"
   }
 }
