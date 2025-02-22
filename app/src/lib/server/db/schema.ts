@@ -1,3 +1,4 @@
+import { relations } from 'drizzle-orm';
 import { pgTable, text, integer, timestamp, pgEnum } from 'drizzle-orm/pg-core';
 import { customAlphabet } from 'nanoid';
 
@@ -13,6 +14,12 @@ export const users = pgTable('users', {
 	createdAt: timestamp('created_at', { withTimezone: true, mode: 'date' }).notNull().defaultNow(),
 	updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'date' }).notNull().$onUpdate(() => new Date())
 });
+
+export const usersRelations = relations(users, ({ many }) => ({
+	workspaces: many(workspaces),
+	workspaceMembers: many(workspaceMembers),
+	workspaceInvitations: many(workspaceInvitations),
+}));
 
 export const sessions = pgTable('sessions', {
 	id: text('id').$defaultFn(() => nanoid(6)).primaryKey(),
@@ -34,6 +41,15 @@ export const workspaces = pgTable('workspaces', {
 	updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'date' }).notNull().$onUpdate(() => new Date())
 });
 
+export const workspacesRelations = relations(workspaces, ({ one, many }) => ({
+	owner: one(users, {
+		fields: [workspaces.ownerId],
+		references: [users.id]
+	}),
+	members: many(workspaceMembers),
+	invitations: many(workspaceInvitations)
+}));
+
 export const workspaceMembers = pgTable('workspace_members', {
 	workspaceId: text('workspace_id')
 		.notNull()
@@ -44,6 +60,14 @@ export const workspaceMembers = pgTable('workspace_members', {
 	updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'date' }).notNull().$onUpdate(() => new Date())
 });
 
+export const workspaceMembersRelations = relations(workspaceMembers, ({ one }) => ({
+	workspace: one(workspaces, {
+		fields: [workspaceMembers.workspaceId],
+		references: [workspaces.id]
+	}),
+	user: one(users, { fields: [workspaceMembers.userId], references: [users.id] })
+}));
+
 export const workspaceInvitations = pgTable('workspace_invitations', {
 	id: text('id').$defaultFn(() => nanoid(6)).primaryKey(),
 	workspaceId: text('workspace_id')
@@ -52,11 +76,20 @@ export const workspaceInvitations = pgTable('workspace_invitations', {
 	inviterId: text('inviter_id').notNull().references(() => users.id),
 	inviteeEmail: text('invitee_email').notNull(),
 	role: roles('role').notNull().default('member'),
+	token: text('token').$defaultFn(() => nanoid(21)).notNull().unique(),
 	expiresAt: timestamp('expires_at', { withTimezone: true, mode: 'date' }).notNull(),
 	acceptedAt: timestamp('accepted_at', { withTimezone: true, mode: 'date' }),
 	createdAt: timestamp('created_at', { withTimezone: true, mode: 'date' }).notNull().defaultNow(),
 	updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'date' }).notNull().$onUpdate(() => new Date())
 });
+
+export const workspaceInvitationsRelations = relations(workspaceInvitations, ({ one }) => ({
+	workspace: one(workspaces, {
+		fields: [workspaceInvitations.workspaceId],
+		references: [workspaces.id]
+	}),
+	inviter: one(users, { fields: [workspaceInvitations.inviterId], references: [users.id] })
+}));
 
 export type Session = typeof sessions.$inferSelect;
 export type SessionInsert = typeof sessions.$inferInsert;

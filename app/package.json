@@ -65,6 +65,7 @@
 		"drizzle-orm": "^0.38.4",
 		"lucide-svelte": "^0.475.0",
 		"nanoid": "^5.1.0",
-		"postgres": "^3.4.5"
+		"postgres": "^3.4.5",
+		"resend": "^4.1.2"
 	}
 }
