@@ -1,5 +1,5 @@
 <script lang="ts">
-	import clsx from "clsx";
+	import { cn } from "@/utils";
 
     const tabs = [
         {
@@ -41,9 +41,9 @@
         {#each tabs as tab, index}
             <button 
                 onclick={() => switchTab(index)}
-                class={clsx(
+                class={cn(
                     "px-4 py-2 rounded-xl text-gray-500",
-                    activeTabIndex===index && "bg-white shadow-mild text-black",
+                    activeTabIndex===index ? "bg-white shadow-mild text-black" :"",
                 )}
             >
                 {tab.title}

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { ExplainerSection, HeroSection, ProblemStatementSection, StepsSection } from "$lib/components/sections/home";
+	import { ExplainerSection, HeroSection, ProblemStatementSection, StepsSection } from "@/components/sections/home";
 
     const introSection = {
         id: "home-intro",

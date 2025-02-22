@@ -9,9 +9,7 @@ const config = {
 
 	kit: {
 		adapter: adapter(),
-		alias: {
-			"@/*": "./path/to/lib/*",
-		},
+		alias: { '@/*': './src/lib/*' }
 	}
 };
 

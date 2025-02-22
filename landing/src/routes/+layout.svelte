@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Footer, Gradient } from '$lib/components/misc';
+	import { Footer, Gradient } from '@/components/misc';
 	import { fly } from "svelte/transition";
 	import '../app.css';
 </script>
