@@ -29,6 +29,8 @@
     });
 </script>
 
+<pre>{JSON.stringify(data, null, 2)}</pre>
+
 <div class="container mx-auto max-w-2xl py-8">
     <div class="p-6">
         <h1 class="text-2xl font-bold mb-6">Create Workspace</h1>
@@ -65,8 +67,7 @@
                     <label for="inviteeEmails">Invite Team Members</label>
                     <button 
                         type="button" 
-                        variant="outline" 
-                        size="sm"
+                        class="bg-gray-100 p-2 rounded-md"
                         onclick={addInviteeField}
                     >
                         <Plus class="w-4 h-4 mr-2" />
@@ -89,8 +90,7 @@
                         {#if invitees.length > 1}
                             <button 
                                 type="button"
-                                variant="destructive"
-                                size="icon"
+                                class="bg-gray-100 p-2 rounded-md"
                                 onclick={() => removeInviteeField(index)}
                             >
                                 <Trash2 class="w-4 h-4" />
