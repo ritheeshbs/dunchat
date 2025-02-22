@@ -14,32 +14,21 @@
 
     let { id, title, description, imageURL, altText } : ExplainerSectionProps = $props();
 
-    /**
-	 * Splits the description into segments based on markdown-style highlighting.
-	 *
-	 * @param description - The description text to be split into segments.
-	 * @returns An array of DescriptionSegment objects, each containing the text and a boolean indicating if it's highlighted.
-	 */
-	function getDescriptionSegments(description: string): DescriptionSegment[] {
-		// Regular expression to match markdown-style highlighting (text surrounded by asterisks)
+	function highlightDescription(description: string): DescriptionSegment[] {
 		const regex = /\*(.*?)\*/g;
 		let match;
-		let lastIndex = 0; // Keeps track of the last index processed to ensure all text is accounted for
-		const segments: DescriptionSegment[] = []; // Array to store the description segments
+		let lastIndex = 0; 
+		const segments: DescriptionSegment[] = []; 
 
-		// Loop through the description to find all matches of the highlighting pattern
 		while ((match = regex.exec(description)) !== null) {
-			// If there's text before the current match, add it as a non-highlighted segment
 			if (match.index > lastIndex) {
 				segments.push({ text: description.slice(lastIndex, match.index), highlight: false });
 			}
-			// Add the matched text as a highlighted segment
+			
 			segments.push({ text: match[1], highlight: true });
-			// Update the last index to the position after the current match
 			lastIndex = regex.lastIndex;
 		}
 
-		// Ensure the remaining text after the last match is included as a non-highlighted segment
 		if (lastIndex < description.length) {
 			segments.push({ text: description.slice(lastIndex), highlight: false });
 		}
@@ -59,10 +48,10 @@
         {title}
     </h2>
 
-    <img src={imageURL} alt={altText} class="w-full rounded-2xl border-2 border-white shadow-mild" />
+    <img src={imageURL} alt={altText} class="w-full rounded-3xl border-2 border-white shadow-mild" />
 
     <p class="w-full text-xl font-medium leading-relaxed text-gray-500 wrap-pre-line">
-        {#each getDescriptionSegments(description) as segment}
+        {#each highlightDescription(description) as segment}
             {#if segment.highlight}
                 <span class="text-black">{segment.text}</span>
             {:else}
