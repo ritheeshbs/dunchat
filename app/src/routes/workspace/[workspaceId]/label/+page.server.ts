@@ -2,7 +2,7 @@ import type { PageServerLoad } from './$types';
 import { db } from '$lib/server/db';
 import { eq } from 'drizzle-orm';
 import { feedLabels, workspaces } from '$lib/server/db/schema';
-import { redirect } from '@sveltejs/kit';
+import { redirect, fail, type Actions } from '@sveltejs/kit';
 
 export const load = (async ({ params, locals }) => {
     if (!locals.user) {
@@ -25,3 +25,30 @@ export const load = (async ({ params, locals }) => {
     });
     return { labels, workspace };
 }) satisfies PageServerLoad;
+
+export const actions: Actions = {
+    delete: async ({ request, params, locals }) => {
+        if (!locals.user) {
+            return fail(401, { error: 'Unauthorized' });
+        }
+
+        const formData = await request.formData();
+        const labelId = formData.get('labelId') as string;
+
+        if (!labelId) {
+            return fail(400, { error: 'Label ID is required' });
+        }
+
+        const label = await db.query.feedLabels.findFirst({
+            where: eq(feedLabels.id, labelId)
+        });
+
+        if (!label) {
+            return fail(404, { error: 'Label not found' });
+        }
+
+        await db.delete(feedLabels).where(eq(feedLabels.id, labelId));
+
+        return redirect(302, `/workspace/${params.workspaceId}/label`);
+    }
+} satisfies Actions;

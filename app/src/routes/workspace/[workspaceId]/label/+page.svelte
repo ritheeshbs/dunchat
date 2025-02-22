@@ -12,6 +12,12 @@
             <div class="flex flex-col gap-2">
                 <h2>{label.label}</h2>
                 <p>{label.color}</p>
+
+                <!-- delete label -->
+                <form method="post" action="?/delete">
+                    <input type="hidden" name="labelId" value={label.id} />
+                    <button type="submit">Delete</button>
+                </form>
             </div>
         {/each}
     </div>
