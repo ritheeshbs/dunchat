@@ -106,11 +106,23 @@ export const feeds = pgTable('feeds', {
 	updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'date' }).notNull().$onUpdate(() => new Date())
 });
 
+export const feedsRelations = relations(feeds, ({ many, one }) => ({
+	comments: many(feedComments),
+	workspace: one(workspaces, {
+		fields: [feeds.workspaceId],
+		references: [workspaces.id]
+	}),
+	author: one(users, {
+		fields: [feeds.authorId],
+		references: [users.id]
+	})
+}));
+
 export const feedComments = pgTable('feed_comments', {
 	id: text('id').$defaultFn(() => nanoid(6)).primaryKey(),
 	feedId: text('feed_id')
 		.notNull()
-		.references(() => feeds.id),
+		.references(() => feeds.id, { onDelete: 'cascade' }),
 	content: text('content').notNull(),
 	authorId: text('author_id')
 		.notNull()
@@ -119,6 +131,17 @@ export const feedComments = pgTable('feed_comments', {
 	updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'date' }).notNull().$onUpdate(() => new Date())
 });
 
+export const feedCommentsRelations = relations(feedComments, ({ one, many }) => ({
+	feed: one(feeds, {
+		fields: [feedComments.feedId],
+		references: [feeds.id]
+	}),
+	author: one(users, {
+		fields: [feedComments.authorId],
+		references: [users.id]
+	}),
+	replies: many(feedComments)
+}));
 
 export type Session = typeof sessions.$inferSelect;
 export type SessionInsert = typeof sessions.$inferInsert;

@@ -8,9 +8,13 @@
     <h1 class="text-2xl font-bold">Feed</h1>
     <ul>
         {#each data.allFeeds as feed}
-            <li>{feed.title}</li>
-            <p>{feed.content}</p>
-            <p>{feed.createdAt}</p>
+            <a href={`/workspace/${data.workspace.slug}/feed/${feed.id}`}>
+                <li>{feed.title}</li>
+                <p>{feed.content}</p>
+                <p>{feed.createdAt}</p>
+            </a>
         {/each}
     </ul>
+
+
 </div>
