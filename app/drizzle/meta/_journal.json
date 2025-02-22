@@ -22,6 +22,20 @@
       "when": 1740229959171,
       "tag": "0002_jazzy_magdalene",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1740233337261,
+      "tag": "0003_glamorous_spitfire",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1740234211617,
+      "tag": "0004_ordinary_husk",
+      "breakpoints": true
     }
   ]
 }

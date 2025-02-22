@@ -1,7 +1,7 @@
 import type { PageServerLoad } from './$types';
 import { db } from '@/server/db';
 import { eq } from 'drizzle-orm';
-import { feedComments, feeds } from '$lib/server/db/schema';
+import { feedComments, feeds, workspaces } from '$lib/server/db/schema';
 import { error, fail, redirect, type Actions } from '@sveltejs/kit';
 
 export const load = (async ({ params, locals }) => {
@@ -12,7 +12,7 @@ export const load = (async ({ params, locals }) => {
     const feed = await db.query.feeds.findFirst({
         where: eq(feeds.id, params.feedId),
         with: {
-            comments: true
+            comments: true,
         }
     });
 
@@ -29,21 +29,31 @@ export const actions: Actions = {
     createComment: async ({ request, params, locals }) => {
         const formData = await request.formData();
         const feedId = params.feedId as string;
+        const workspaceId = params.workspaceId as string;
         const content = formData.get('content') as string;
 
-        if (!content || !feedId) {
-            return fail(400, { error: 'Content and feedId are required' });
+
+        if (!content || !feedId || !workspaceId) {
+            return fail(400, { error: 'Content, feedId and workspaceId are required' });
         }
 
         if (!locals.user) {
             return fail(401, { error: 'Unauthorized' });
         }
 
+        // get the workspace
+        const workspace = await db.query.workspaces.findFirst({
+            where: eq(workspaces.slug, workspaceId)
+        });
+
+        if (!workspace) {
+            return fail(404, { error: 'Workspace not found' });
+        }
+
         const [comment] = await db.insert(feedComments).values({
             content,
             authorId: locals.user.id,
-            createdAt: new Date(),
-            updatedAt: new Date(),
+            workspaceId: workspace.id,
             feedId: feedId
         }).returning();
 
