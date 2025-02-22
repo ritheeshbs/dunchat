@@ -24,6 +24,14 @@
         imageURL: "/images/thread-conversation.png",
         altText: "Thread conversation interface in DunChat"
     }
+
+    const feedSection = {
+        id: "home-feed",
+        title: "Quick team updates with the internal feed",
+        description: "*The internal feed lets everyone see the latest news, updates, quick notes*, or just to share about your day *without cluttering your threads*.\n\nLabel your updates—like \"Project update\" or \"Announcements\"—so that so the important stuff doesn't get lost in the shuffle.",
+        imageURL: "/images/feed.png",
+        altText: "Feed interface in DunChat"
+    }
 </script>
 
 <HeroSection />
@@ -31,3 +39,4 @@
 <ExplainerSection {...introSection} />
 <ExplainerSection {...workspaceSection} />
 <ExplainerSection {...threadsSection} />
+<ExplainerSection {...feedSection} />
