@@ -40,13 +40,13 @@
 </script>
 
 <section id={id} class="flex w-full flex-col gap-6">
-    <h2 id="{id}-title" class="w-full text-start text-4xl font-medium leading-tight tracking-tight">
+    <h2 id="{id}-title" class="w-full text-start text-2xl lg:text-4xl font-medium leading-tight tracking-tight">
         {title}
     </h2>
 
     <img src={imageURL} alt={altText} class="w-full rounded-3xl border-2 border-white shadow-mild" />
 
-    <p class="w-full text-xl font-medium leading-relaxed text-gray-500 wrap-pre-line">
+    <p class="w-full text-lg lg:text-xl font-medium leading-relaxed text-gray-500 wrap-pre-line">
         {#each highlightDescription(description) as lineSegments, lineIndex}
             {#if lineIndex > 0}<br>{/if}
             {#each lineSegments as segment}

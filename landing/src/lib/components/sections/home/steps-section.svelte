@@ -32,9 +32,9 @@
 >
     <h2
         id="home-title"
-        class="w-full text-start text-4xl font-medium leading-tight tracking-tight"
+        class="w-full text-start text-2xl lg:text-4xl font-medium leading-tight tracking-tight"
     >
-        Conversations dun within four steps
+        Conversations dun within three steps
     </h2>
 
     <div class="flex gap-1 p-1 rounded-2xl bg-black/5 overflow-clip font-medium w-fit">

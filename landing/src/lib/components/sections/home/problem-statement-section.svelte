@@ -1,6 +1,6 @@
 <section
     id="home-problem-statement"
-    class="flex flex-col gap-6 text-xl font-medium leading-relaxed text-gray-500"
+    class="flex flex-col gap-6 text-lg lg:text-xl font-medium leading-relaxed text-gray-500"
 >
     <p>Most chat tools are a mess. Endless channels, cluttered messages, and a confusing interface that's <span class="text-black">more distracting than helpful.</span></p>
 
