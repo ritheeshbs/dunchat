@@ -9,6 +9,7 @@ import { handleError } from "@/utils/error";
 
 const usersGroup = new Hono();
 
+// Login 
 usersGroup.post('/register', async(c) => {
     try {
         const { userName, email, password } = await c.req.json()
@@ -74,6 +75,7 @@ usersGroup.post('/register', async(c) => {
     }
 })
 
+// 
 usersGroup.post('/login', async(c) => {
     try {
         const { email, password } = await c.req.json()
