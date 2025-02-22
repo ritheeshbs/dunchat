@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { ExplainerSection, HeroSection, ProblemStatementSection } from "$lib/components/sections/home";
+	import { ExplainerSection, HeroSection, ProblemStatementSection, StepsSection } from "$lib/components/sections/home";
 
     const introSection = {
         id: "home-intro",
@@ -32,11 +32,21 @@
         imageURL: "/images/feed.png",
         altText: "Feed interface in DunChat"
     }
+
+    const keyboardShortcutsSection = {
+        id: "home-keyboard-shortcuts",
+        title: "And the best of all, it's keyboard first",
+        description: "No need to waste time clicking around—DunChat is built to work with keyboard shortcuts.\n\nWith our pre——set shortcuts, everything is just a few keystrokes away. *You can navigate, make changes, and manage threads more efficiently—saving you time and effort on every action.*",
+        imageURL: "/images/keyboard-shortcuts.png",
+        altText: "Keyboard shortcuts for managing a thread"
+    }
 </script>
 
 <HeroSection />
 <ProblemStatementSection />
 <ExplainerSection {...introSection} />
+<StepsSection />
 <ExplainerSection {...workspaceSection} />
 <ExplainerSection {...threadsSection} />
 <ExplainerSection {...feedSection} />
+<ExplainerSection {...keyboardShortcutsSection} />
