@@ -91,6 +91,35 @@ export const workspaceInvitationsRelations = relations(workspaceInvitations, ({ 
 	inviter: one(users, { fields: [workspaceInvitations.inviterId], references: [users.id] })
 }));
 
+
+export const feeds = pgTable('feeds', {
+	id: text('id').$defaultFn(() => nanoid(6)).primaryKey(),
+	workspaceId: text('workspace_id')
+		.notNull()
+		.references(() => workspaces.id),
+	title: text('title').notNull(),
+	content: text('content'),
+	authorId: text('author_id')
+		.notNull()
+		.references(() => users.id, { onDelete: 'cascade' }),
+	createdAt: timestamp('created_at', { withTimezone: true, mode: 'date' }).notNull().defaultNow(),
+	updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'date' }).notNull().$onUpdate(() => new Date())
+});
+
+export const feedComments = pgTable('feed_comments', {
+	id: text('id').$defaultFn(() => nanoid(6)).primaryKey(),
+	feedId: text('feed_id')
+		.notNull()
+		.references(() => feeds.id),
+	content: text('content').notNull(),
+	authorId: text('author_id')
+		.notNull()
+		.references(() => users.id, { onDelete: 'cascade' }),
+	createdAt: timestamp('created_at', { withTimezone: true, mode: 'date' }).notNull().defaultNow(),
+	updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'date' }).notNull().$onUpdate(() => new Date())
+});
+
+
 export type Session = typeof sessions.$inferSelect;
 export type SessionInsert = typeof sessions.$inferInsert;
 export type User = typeof users.$inferSelect;
@@ -101,3 +130,7 @@ export type WorkspaceMember = typeof workspaceMembers.$inferSelect;
 export type WorkspaceMemberInsert = typeof workspaceMembers.$inferInsert;
 export type WorkspaceInvitation = typeof workspaceInvitations.$inferSelect;
 export type WorkspaceInvitationInsert = typeof workspaceInvitations.$inferInsert;
+export type Feed = typeof feeds.$inferSelect;
+export type FeedInsert = typeof feeds.$inferInsert;
+export type FeedComment = typeof feedComments.$inferSelect;
+export type FeedCommentInsert = typeof feedComments.$inferInsert;

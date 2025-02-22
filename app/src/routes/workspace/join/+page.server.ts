@@ -1,5 +1,5 @@
 import { workspaceInvitations, workspaceMembers } from '@/server/db/schema';
-import type { PageServerLoad } from '../../../join/$types';
+import type { PageServerLoad } from './$types';
 import { db } from '@/server/db';
 import { eq } from 'drizzle-orm';
 import { fail, error, type Actions } from '@sveltejs/kit';
