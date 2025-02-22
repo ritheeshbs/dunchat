@@ -2,6 +2,9 @@ import { fail, redirect, type Actions } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { db } from '$lib/server/db';
 import { workspaceInvitations, workspaceMembers, workspaces } from '$lib/server/db/schema';
+import { sendEmail } from '$lib/server/email';
+import { env } from '$env/dynamic/public';
+import { eq } from 'drizzle-orm';
 
 export const load = (async ({ locals }) => {
     if (!locals.user) {
@@ -33,41 +36,118 @@ export const actions: Actions = {
             });
         }
 
-        // Create workspace
-        const [workspace] = await db.insert(workspaces).values({
-            name,
-            slug,
-            ownerId: userId
-        }).returning();
+        try {
+            // Check if slug is already taken
+            const existingWorkspace = await db.query.workspaces.findFirst({
+                where: eq(workspaces.slug, slug)
+            });
 
-        if (!workspace) {
-            return fail(500, { error: 'Failed to create workspace' });
+            if (existingWorkspace) {
+                return fail(400, {
+                    error: 'This workspace URL is already taken. Please choose another.',
+                    name,
+                    slug
+                });
+            }
+
+            // Use transaction to ensure data consistency
+            const result = await db.transaction(async (tx) => {
+                // Create workspace
+                const [workspace] = await tx
+                    .insert(workspaces)
+                    .values({
+                        name,
+                        slug,
+                        ownerId: userId
+                    })
+                    .returning();
+
+                if (!workspace) {
+                    throw new Error('Failed to create workspace');
+                }
+
+                // Add creator as admin
+                await tx
+                    .insert(workspaceMembers)
+                    .values({
+                        workspaceId: workspace.id,
+                        userId,
+                        role: 'admin'
+                    });
+
+                // Create invitations for all valid email addresses
+                const validInvites = inviteeEmails
+                    .filter(email => email && email.includes('@'))
+                    .filter(email => email.toLowerCase() !== locals?.user?.email?.toLowerCase())
+                    .map(email => ({
+                        workspaceId: workspace.id,
+                        inviterId: locals?.user?.id ?? '',
+                        inviteeEmail: email,
+                        role: 'member' as const,
+                        expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24 * 7) // 7 days
+                    }));
+
+                if (validInvites.length > 0) {
+                    const invitations = await tx
+                        .insert(workspaceInvitations)
+                        .values(validInvites)
+                        .returning();
+
+                    // Send invitation emails outside of transaction
+                    // Store emails to be sent after transaction commits
+                    const emailPromises = invitations.map(invitation => ({
+                        invite: invitation,
+                        emailData: {
+                            to: invitation.inviteeEmail,
+                            subject: `Invitation to join ${workspace.name}`,
+                            html: `
+                                <h2>Workspace Invitation</h2>
+                                <p>${locals.user?.email || 'Someone'} has invited you to join the workspace "${workspace.name}".</p>
+                                <p>Click the link below to accept the invitation:</p>
+                                <a href="${env.PUBLIC_BASE_URL}/join?token=${invitation.token}">Accept Invitation</a>
+                                <p>This invitation will expire in 7 days.</p>
+                            `
+                        }
+                    }));
+                    return { workspace, emailPromises };
+                }
+
+                return { workspace, emailPromises: [] };
+            });
+
+            // Send emails after transaction commits
+            if (result.emailPromises.length > 0) {
+                Promise.all(
+                    result.emailPromises.map(async ({ emailData }) => {
+                        try {
+                            await sendEmail(
+                                emailData.to,
+                                emailData.subject,
+                                emailData.html
+                            );
+                        } catch (emailError) {
+                            console.error('Failed to send invitation email:', emailError);
+                        }
+                    })
+                ).catch(error => {
+                    console.error('Error sending invitation emails:', error);
+                });
+            }
+
+            // Instead of throwing redirect, return it
+            return redirect(303, `/workspace/${result.workspace.slug}`);
+
+        } catch (error) {
+            // Only handle actual errors, not redirects
+            if (error instanceof Error) {
+                console.error('Failed to create workspace:', error);
+                return fail(500, {
+                    error: 'Failed to create workspace. Please try again.',
+                    name,
+                    slug
+                });
+            }
+            throw error; // Re-throw if it's not an Error (like a Redirect)
         }
-
-        // Add creator as admin
-        await db.insert(workspaceMembers).values({
-            workspaceId: workspace.id,
-            userId,
-            role: 'admin'
-        });
-
-        // Create invitations for all valid email addresses
-        const validInvites = inviteeEmails
-            .filter(email => email && email.includes('@'))
-            // Don't send invitation to the workspace creator
-            .filter(email => email.toLowerCase() !== locals.user.email.toLowerCase())
-            .map(email => ({
-                workspaceId: workspace.id,
-                inviterId: locals.user.id,
-                inviteeEmail: email,
-                role: 'member',
-                expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24 * 7) // 7 days
-            }));
-
-        if (validInvites.length > 0) {
-            await db.insert(workspaceInvitations).values(validInvites);
-        }
-
-        throw redirect(303, `/workspace/${workspace.slug}`);
     }
 };

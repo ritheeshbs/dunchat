@@ -1,6 +1,7 @@
 <script lang="ts">
     import { Plus, Trash2 } from "lucide-svelte";
     import type { PageData } from './$types';
+	import { enhance } from '$app/forms';
 	
     let { data }: { data: PageData } = $props();
     
@@ -32,7 +33,7 @@
     <div class="p-6">
         <h1 class="text-2xl font-bold mb-6">Create Workspace</h1>
 
-        <form method="POST" action="?/create" class="space-y-6">
+        <form method="POST" action="?/create" class="space-y-6" use:enhance>
             <div class="space-y-2">
                 <label for="name">Workspace Name</label>
                 <input 
