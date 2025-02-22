@@ -5,6 +5,8 @@
     let { data }: { data: PageData } = $props();
 </script>
 
+<pre>{JSON.stringify(data, null, 2)}</pre>
+
 <div class="flex flex-col items-center justify-center h-screen">
     <h1 class="text-2xl font-bold">Join Workspace</h1>
     <p>You have been invited to join a workspace.</p>

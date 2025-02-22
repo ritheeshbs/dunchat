@@ -93,6 +93,11 @@ export const actions: Actions = {
                         .values(validInvites)
                         .returning();
 
+                    console.log('invitee emails', invitations.map(invitation => invitation.inviteeEmail));
+
+                    // Add 3 seconds delay before sending invitation emails
+                    // await new Promise(resolve => setTimeout(resolve, 3000));
+
                     // Send invitation emails outside of transaction
                     // Store emails to be sent after transaction commits
                     const emailPromises = invitations.map(invitation => ({
@@ -104,7 +109,7 @@ export const actions: Actions = {
                                 <h2>Workspace Invitation</h2>
                                 <p>${locals.user?.email || 'Someone'} has invited you to join the workspace "${workspace.name}".</p>
                                 <p>Click the link below to accept the invitation:</p>
-                                <a href="${env.PUBLIC_BASE_URL}/join?token=${invitation.token}">Accept Invitation</a>
+                                <a href="${env.PUBLIC_BASE_URL}/workspace/join?token=${invitation.token}">Accept Invitation</a>
                                 <p>This invitation will expire in 7 days.</p>
                             `
                         }
