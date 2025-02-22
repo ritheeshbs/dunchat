@@ -12,7 +12,8 @@
     "drizzle-orm": "^0.39.3",
     "hono": "^4.7.2",
     "nanoid": "^5.1.0",
-    "pg": "^8.13.3"
+    "pg": "^8.13.3",
+    "resend": "^4.1.2"
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.6",
